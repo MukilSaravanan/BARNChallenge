@@ -1,5 +1,6 @@
 <launch>
-  <arg name="use_sim_time" default="true" />
+
+<arg name="use_sim_time" default="true" />
   <arg name="gui" default="true" />
   <arg name="headless" default="true" />
   <arg name="world_name" default="/home/ril/jackal_ws/src/nav-competition-icra2022/jackal_helper/worlds/BARN/world_0.world" />
@@ -39,4 +40,27 @@
 
   <node pkg="jackal_helper" type="collision_publisher_node" name="collision_publisher_node" />
 
+  <param name="use_gui" value="true"/>
+  <arg name="config_robot" default="robot" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find jackal_viz)/rviz/$(arg config_robot).rviz" />
+
+  <arg name="use_map_topic" default="false"/>
+  <arg name="scan_topic" default="front/scan" />
+
+  <!-- Run the map server -->
+ <arg name="map_file" default="/home/ril/jackal_ws/src/nav-competition-icra2022/BARN_dataset/map_files/yaml_0.yaml"/>
+ <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!--- Run AMCL -->
+  <include file="$(find jackal_navigation)/launch/include/amcl.launch">
+    <arg name="use_map_topic" value="$(arg use_map_topic)" />
+    <arg name="scan_topic"    value="$(arg scan_topic)" />
+  </include>
+
+  <!--- Run Move Base -->
+ <include file="$(find jackal_navigation)/launch/include/move_base.launch" />
+
+
+
 </launch>
+
