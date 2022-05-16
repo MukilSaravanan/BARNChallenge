@@ -2,9 +2,14 @@
 import rospy
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
-import numpy as np
+# import numpy as np
+import csv
+
+filename='dataset.csv'
+file_obj=open(filename,'w')
 
 class Jackal():
+
     def __init__(self):
         rospy.init_node('rand_cmd_vel_pub')
         self.vt=[]
@@ -19,11 +24,11 @@ class Jackal():
             pass
 
     def collect_data(self):
-        rospy.Subscriber('/front/scan',LaserScan,self.laser_scan_callback)
         rospy.Subscriber('/jackal_velocity_controller/cmd_vel',Twist,self.cmd_vel_callback)
         rospy.spin()
 
     def cmd_vel_callback(self,data):
+        rospy.Subscriber('/front/scan',LaserScan,self.laser_scan_callback)
         self.vt=data.linear.x,data.linear.y,data.angular.z
         self.dataset[720:723]=self.vt
 
